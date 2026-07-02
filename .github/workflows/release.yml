@@ -122,6 +122,7 @@ jobs:
     needs: [python-package, windows-exe, docker-package]
     env:
       GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
       RELEASE_TAG: ${{ github.event.inputs.tag || github.ref_name }}
     steps:
       - name: Download Windows EXE artifact
