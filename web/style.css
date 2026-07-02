@@ -76,11 +76,30 @@ h2 {
   font-size: 20px;
 }
 
+.head-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 .status {
   border: 1px solid var(--line);
   padding: 8px 12px;
   background: #fff;
   color: var(--muted);
+}
+
+.lang-toggle {
+  border: 1px solid var(--line);
+  background: #fff;
+  color: var(--ink);
+  min-height: 36px;
+  padding: 0 12px;
+  cursor: pointer;
+}
+
+.lang-toggle:hover {
+  background: #f3f6f8;
 }
 
 .grid {
@@ -305,6 +324,11 @@ dd {
   .preview-head {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .head-actions {
+    width: 100%;
+    justify-content: space-between;
   }
 
   .stats {

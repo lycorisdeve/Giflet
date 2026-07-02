@@ -2,6 +2,24 @@
 
 一个用于把抖音/字节 `.awebp` 动态表情链接或本地图片提取为 `.gif` 的小工具。
 
+Giflet is a small tool for extracting GIF files from Douyin/ByteDance `.awebp` animated emote links or local image files.
+
+## 缘起 / Why this exists
+
+我只是想把抖音里的 GIF 表情保存下来，在其他社交场景里继续使用，但页面上没有找到直接保存按钮。于是最终由 Codex 协助开发了这款小工具。
+
+I built this because I wanted to save Douyin GIF emotes for use in other social apps, but could not find a direct save button. Codex helped turn that small need into this tool.
+
+## 免责声明 / Disclaimer
+
+Giflet 仅用于个人学习、格式转换和个人备份场景。请尊重原作者、平台规则和相关版权，不要将提取结果用于侵权、商用盗用、二次分发等用途。
+
+如果本项目或相关说明涉及侵权，请联系我删除。
+
+Giflet is intended for personal learning, format conversion, and personal backup use only. Please respect original creators, platform rules, and copyright. Do not use extracted files for infringement, unauthorized commercial use, or redistribution.
+
+If this project or its documentation infringes your rights, please contact me and I will remove the relevant content.
+
 ## 功能
 
 - 粘贴一个或多个 `.awebp` 链接
@@ -11,8 +29,29 @@
 - 保留原始文件和导出的 GIF
 - 桌面 GUI 内预览导出的 GIF
 - 本地 Web 页面支持上传图片或粘贴链接
+- 支持中文 / English 界面切换
 - 支持命令行批量处理
 - 支持用 PyInstaller 打包成 Windows EXE
+
+## 获取图片链接 / Get the image link
+
+在网页里获取 `.awebp` 链接的一种方式：
+
+1. 打开包含目标表情的页面。
+2. 按 `F12` 打开开发者工具。
+3. 使用选择元素工具，点选目标图片。
+4. 在 Elements / Network 中找到图片地址。
+5. 复制以 `.awebp`、`.webp` 或相关图片服务地址结尾的链接。
+6. 粘贴到 Giflet 的“粘贴链接”输入框中。
+
+One way to get the image link:
+
+1. Open the page that contains the emote.
+2. Press `F12` to open Developer Tools.
+3. Use the element picker and select the image.
+4. Find the image URL in Elements or Network.
+5. Copy the `.awebp`, `.webp`, or related image-service URL.
+6. Paste it into Giflet's link input.
 
 ## 方式一：桌面 GUI
 
@@ -107,8 +146,8 @@ pip install -r requirements.txt
 发布新版本：
 
 ```powershell
-git tag v0.1.0
-git push origin v0.1.0
+git tag v0.1.3
+git push origin v0.1.3
 ```
 
 GitHub Actions 会自动完成 Release 和 Packages 发布。
