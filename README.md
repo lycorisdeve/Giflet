@@ -89,3 +89,26 @@ python app.py --image "C:\path\to\image.awebp" --output exports
 ```powershell
 pip install -r requirements.txt
 ```
+
+## CI/CD
+
+仓库内置 GitHub Actions：
+
+- `.github/workflows/ci.yml`：推送到 `master` 或 PR 时，运行 Python 3.10/3.11/3.12 编译检查、单元测试和 Docker 构建检查。
+- `.github/workflows/release.yml`：推送 `v*` tag 时自动发布。
+
+发布流程会生成：
+
+- GitHub Release
+- Windows EXE 压缩包：`Giflet-windows-x64.zip`
+- Python wheel / sdist
+- GitHub Packages / GHCR 镜像：`ghcr.io/lycorisdeve/giflet`
+
+发布新版本：
+
+```powershell
+git tag v0.1.0
+git push origin v0.1.0
+```
+
+GitHub Actions 会自动完成 Release 和 Packages 发布。

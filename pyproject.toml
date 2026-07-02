@@ -1,0 +1,41 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "giflet"
+version = "0.1.0"
+description = "Extract GIF files from animated AWebP/WebP links or local images."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+  "Pillow>=11.0",
+]
+authors = [
+  { name = "Lycoris", email = "lycorisdeve@gmail.com" },
+]
+keywords = ["gif", "webp", "awebp", "converter", "tkinter"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Environment :: Win32 (MS Windows)",
+  "Environment :: Web Environment",
+  "Intended Audience :: End Users/Desktop",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+]
+
+[project.urls]
+Homepage = "https://github.com/lycorisdeve/Giflet"
+Repository = "https://github.com/lycorisdeve/Giflet"
+
+[project.scripts]
+giflet = "app:main"
+giflet-web = "web_app:main"
+
+[tool.setuptools]
+py-modules = ["app", "giflet_core", "web_app"]
+
+[tool.setuptools.data-files]
+"web" = ["web/index.html", "web/main.js", "web/style.css"]

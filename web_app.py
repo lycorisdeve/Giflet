@@ -5,16 +5,17 @@ import cgi
 import json
 import mimetypes
 import os
+import sys
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import parse_qs, unquote, urlparse
 import webbrowser
 
-from app import DEFAULT_OUTPUT_DIR, ExtractionResult, extract_gif_from_bytes, extract_gif_from_url
+from giflet_core import DEFAULT_OUTPUT_DIR, ExtractionResult, extract_gif_from_bytes, extract_gif_from_url
 
 
 ROOT = Path(__file__).resolve().parent
-WEB_ROOT = ROOT / "web"
+WEB_ROOT = ROOT / "web" if (ROOT / "web").is_dir() else Path(sys.prefix) / "web"
 EXPORT_DIR = DEFAULT_OUTPUT_DIR
 
 
