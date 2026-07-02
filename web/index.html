@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Giflet</title>
+    <link rel="stylesheet" href="/assets/style.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <section class="workbench">
+        <header class="masthead">
+          <div>
+            <p class="eyebrow">AWebP to GIF</p>
+            <h1>表情动图提取台</h1>
+          </div>
+          <span id="status" class="status">Ready</span>
+        </header>
+
+        <div class="grid">
+          <section class="panel input-panel">
+            <div class="tabs" role="tablist" aria-label="Input mode">
+              <button class="tab is-active" data-tab="file" type="button">上传图片</button>
+              <button class="tab" data-tab="url" type="button">粘贴链接</button>
+            </div>
+
+            <form id="fileForm" class="input-mode" enctype="multipart/form-data">
+              <label class="dropzone">
+                <input id="imageInput" name="image" type="file" accept=".awebp,.webp,.gif,.png,.jpg,.jpeg,.bmp,image/*" />
+                <span class="drop-title">选择本地图片</span>
+                <span id="fileName" class="drop-copy">支持 animated WebP / AWebP / GIF，也可转单帧图片</span>
+              </label>
+              <button class="primary" type="submit">提取 GIF</button>
+            </form>
+
+            <form id="urlForm" class="input-mode is-hidden">
+              <label class="field">
+                <span>图片链接</span>
+                <textarea id="urlInput" rows="7" placeholder="https://...awebp?..."></textarea>
+              </label>
+              <button class="primary" type="submit">下载并提取</button>
+            </form>
+
+            <div class="log-wrap">
+              <div class="log-title">运行记录</div>
+              <pre id="log"></pre>
+            </div>
+          </section>
+
+          <section class="panel preview-panel">
+            <div class="preview-head">
+              <div>
+                <p class="eyebrow">Preview</p>
+                <h2>输出预览</h2>
+              </div>
+              <a id="downloadLink" class="ghost is-disabled" href="#" download>下载 GIF</a>
+            </div>
+            <div class="preview-stage">
+              <img id="preview" alt="" />
+              <p id="emptyState">完成转换后，GIF 会显示在这里。</p>
+            </div>
+            <dl class="stats">
+              <div><dt>尺寸</dt><dd id="sizeStat">-</dd></div>
+              <div><dt>帧数</dt><dd id="frameStat">-</dd></div>
+              <div><dt>文件</dt><dd id="fileStat">-</dd></div>
+            </dl>
+          </section>
+        </div>
+      </section>
+    </main>
+    <script src="/assets/main.js"></script>
+  </body>
+</html>
