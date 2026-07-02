@@ -146,8 +146,8 @@ pip install -r requirements.txt
 发布新版本：
 
 ```powershell
-git tag v0.1.3
-git push origin v0.1.3
+git tag v0.1.4
+git push origin v0.1.4
 ```
 
 GitHub Actions 会自动完成 Release 和 Packages 发布。

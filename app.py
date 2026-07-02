@@ -6,6 +6,7 @@ import queue
 import sys
 import threading
 import time
+import webbrowser
 from pathlib import Path
 from tkinter import BOTH, END, LEFT, RIGHT, X, Y, filedialog, messagebox, ttk
 import tkinter as tk
@@ -24,12 +25,16 @@ from giflet_core import (
 
 
 APP_TITLE = "Giflet"
+REPO_URL = "https://github.com/lycorisdeve/Giflet"
 TEXTS = {
     "zh": {
         "lang_button": "English",
         "ready": "就绪",
         "title": "Giflet",
+        "tagline": "把抖音 AWebP 表情轻轻转成 GIF",
+        "github": "GitHub",
         "source": "链接或本地图片",
+        "source_hint": "像发消息一样：粘贴链接，或点按钮选择图片。",
         "placeholder": "在这里粘贴一个或多个 .awebp 链接，或在下方选择本地图片...",
         "add_images": "添加图片",
         "remove_selected": "清空图片",
@@ -48,6 +53,7 @@ TEXTS = {
         "done": "完成",
         "preview": "预览",
         "preview_empty": "转换后的 GIF 会显示在这里",
+        "preview_hint": "输出后可直接打开文件夹继续使用",
         "run_log": "运行记录",
         "clipboard_empty": "剪贴板为空。",
         "choose_images": "选择图片",
@@ -69,7 +75,10 @@ TEXTS = {
         "lang_button": "中文",
         "ready": "Ready",
         "title": "Giflet",
+        "tagline": "Turn Douyin AWebP emotes into GIFs",
+        "github": "GitHub",
         "source": "Links or local images",
+        "source_hint": "Use it like a chat box: paste links, or choose images.",
         "placeholder": "Paste one or more .awebp links here, or choose local image files below...",
         "add_images": "Add images",
         "remove_selected": "Clear images",
@@ -88,6 +97,7 @@ TEXTS = {
         "done": "Done",
         "preview": "Preview",
         "preview_empty": "Converted GIF preview appears here",
+        "preview_hint": "Open the output folder and use the GIF anywhere",
         "run_log": "Run log",
         "clipboard_empty": "Clipboard is empty.",
         "choose_images": "Choose images",
@@ -118,8 +128,8 @@ class ExtractorApp(tk.Tk):
     def __init__(self) -> None:
         super().__init__()
         self.title(APP_TITLE)
-        self.geometry("1120x720")
-        self.minsize(980, 620)
+        self.geometry("1160x740")
+        self.minsize(1020, 640)
 
         self.output_dir = tk.StringVar(value=str(DEFAULT_OUTPUT_DIR))
         self.language = tk.StringVar(value="zh")
@@ -142,55 +152,82 @@ class ExtractorApp(tk.Tk):
         return TEXTS[self.language.get()][key].format(**values)
 
     def _configure_style(self) -> None:
-        self.configure(bg="#F3F3F3")
+        self.configure(bg="#F6F8FA")
         default_font = tkfont.nametofont("TkDefaultFont")
         default_font.configure(family="Segoe UI Variable", size=10)
         style = ttk.Style(self)
         style.theme_use("clam")
         style.configure(".", font=("Segoe UI Variable", 10), borderwidth=0)
-        style.configure("TFrame", background="#F3F3F3")
-        style.configure("Header.TFrame", background="#F3F3F3")
+        style.configure("TFrame", background="#F6F8FA")
+        style.configure("Header.TFrame", background="#F6F8FA")
         style.configure("Panel.TFrame", background="#FFFFFF", relief="flat")
-        style.configure("TLabel", background="#F3F3F3", foreground="#1F1F1F")
-        style.configure("Panel.TLabel", background="#FFFFFF", foreground="#1F1F1F")
-        style.configure("Muted.TLabel", background="#FFFFFF", foreground="#606060")
-        style.configure("Title.TLabel", background="#F3F3F3", font=("Segoe UI Variable Display", 22, "bold"), foreground="#1F1F1F")
-        style.configure("Status.TLabel", background="#FFFFFF", foreground="#606060", padding=(10, 5))
-        style.configure("Accent.TButton", padding=(18, 10), background="#0067C0", foreground="#FFFFFF", borderwidth=0)
+        style.configure("Subtle.TFrame", background="#F6F8FA", relief="flat")
+        style.configure("TLabel", background="#F6F8FA", foreground="#1F2328")
+        style.configure("Panel.TLabel", background="#FFFFFF", foreground="#1F2328")
+        style.configure("Muted.TLabel", background="#FFFFFF", foreground="#57606A")
+        style.configure("Subtle.TLabel", background="#F6F8FA", foreground="#57606A")
+        style.configure("Title.TLabel", background="#F6F8FA", font=("Segoe UI Variable Display", 24, "bold"), foreground="#1F2328")
+        style.configure("Tagline.TLabel", background="#F6F8FA", font=("Segoe UI Variable", 10), foreground="#57606A")
+        style.configure("Section.TLabel", background="#FFFFFF", font=("Segoe UI Variable", 12, "bold"), foreground="#1F2328")
+        style.configure("Status.TLabel", background="#FFFFFF", foreground="#57606A", padding=(12, 6))
+        style.configure("Accent.TButton", padding=(20, 11), background="#07C160", foreground="#FFFFFF", borderwidth=0)
         style.map(
             "Accent.TButton",
-            background=[("active", "#005A9E"), ("pressed", "#004E8C"), ("disabled", "#B7D4EF")],
+            background=[("active", "#06AD56"), ("pressed", "#049B4D"), ("disabled", "#A6E8C3")],
             foreground=[("disabled", "#F7FBFF")],
         )
-        style.configure("TButton", padding=(12, 8), background="#F7F7F7", foreground="#1F1F1F", bordercolor="#D1D1D1", lightcolor="#F7F7F7", darkcolor="#F7F7F7")
-        style.map("TButton", background=[("active", "#EFEFEF"), ("pressed", "#E5E5E5")])
-        style.configure("Treeview", rowheight=32, background="#FFFFFF", fieldbackground="#FFFFFF", bordercolor="#E5E5E5", lightcolor="#E5E5E5", darkcolor="#E5E5E5")
-        style.configure("Treeview.Heading", font=("Segoe UI Variable", 10, "bold"), background="#FAFAFA", foreground="#3A3A3A", bordercolor="#E5E5E5")
-        style.map("Treeview", background=[("selected", "#DCEBFA")], foreground=[("selected", "#1F1F1F")])
+        style.configure("TButton", padding=(13, 9), background="#F6F8FA", foreground="#24292F", bordercolor="#D0D7DE", lightcolor="#F6F8FA", darkcolor="#F6F8FA")
+        style.map("TButton", background=[("active", "#EFF2F5"), ("pressed", "#EAEFF4")])
+        style.configure("Ghost.TButton", padding=(13, 9), background="#FFFFFF", foreground="#57606A", bordercolor="#D0D7DE")
+        style.configure("Treeview", rowheight=34, background="#FFFFFF", fieldbackground="#FFFFFF", bordercolor="#D0D7DE", lightcolor="#D0D7DE", darkcolor="#D0D7DE")
+        style.configure("Treeview.Heading", font=("Segoe UI Variable", 10, "bold"), background="#F6F8FA", foreground="#57606A", bordercolor="#D0D7DE")
+        style.map("Treeview", background=[("selected", "#DDF4FF")], foreground=[("selected", "#1F2328")])
 
     def _build_layout(self) -> None:
-        header = ttk.Frame(self, style="Header.TFrame", padding=(24, 18, 24, 10))
+        header = ttk.Frame(self, style="Header.TFrame", padding=(28, 22, 28, 12))
         header.pack(fill=X)
-        self.title_label = ttk.Label(header, text="Giflet", style="Title.TLabel")
-        self.title_label.pack(side=LEFT)
+        brand = ttk.Frame(header, style="Header.TFrame")
+        brand.pack(side=LEFT)
+        self.title_label = ttk.Label(brand, text="Giflet", style="Title.TLabel")
+        self.title_label.pack(anchor="w")
+        self.tagline_label = ttk.Label(brand, text="", style="Tagline.TLabel")
+        self.tagline_label.pack(anchor="w", pady=(2, 0))
+        self.github_button = tk.Button(
+            header,
+            text="GitHub",
+            command=self._open_github,
+            bg="#24292F",
+            fg="#FFFFFF",
+            activebackground="#32383F",
+            activeforeground="#FFFFFF",
+            relief="flat",
+            bd=0,
+            padx=16,
+            pady=8,
+            cursor="hand2",
+            font=("Segoe UI Variable", 10, "bold"),
+        )
+        self.github_button.pack(side=RIGHT, padx=(8, 0))
         self.lang_button = ttk.Button(header, command=self._toggle_language)
         self.lang_button.pack(side=RIGHT, padx=(8, 0))
         ttk.Label(header, textvariable=self.status, style="Status.TLabel").pack(side=RIGHT)
 
-        body = ttk.Frame(self, padding=(24, 10, 24, 24))
+        body = ttk.Frame(self, padding=(28, 10, 28, 28))
         body.pack(fill=BOTH, expand=True)
 
-        left = ttk.Frame(body, style="Panel.TFrame", padding=18)
+        left = ttk.Frame(body, style="Panel.TFrame", padding=22)
         left.pack(side=LEFT, fill=BOTH, expand=True)
 
-        right = ttk.Frame(body, style="Panel.TFrame", padding=18)
-        right.pack(side=RIGHT, fill=BOTH, expand=True, padx=(18, 0))
+        right = ttk.Frame(body, style="Panel.TFrame", padding=22)
+        right.pack(side=RIGHT, fill=BOTH, expand=True, padx=(20, 0))
 
-        self.source_label = ttk.Label(left, text="", style="Panel.TLabel", font=("Segoe UI Semibold", 11))
+        self.source_label = ttk.Label(left, text="", style="Section.TLabel")
         self.source_label.pack(anchor="w")
+        self.source_hint_label = ttk.Label(left, text="", style="Muted.TLabel")
+        self.source_hint_label.pack(anchor="w", pady=(3, 12))
         self.url_text = ScrolledText(
             left,
-            height=8,
+            height=7,
             wrap="word",
             font=("Cascadia Mono", 10),
             borderwidth=1,
@@ -206,13 +243,13 @@ class ExtractorApp(tk.Tk):
         self.url_text.insert("1.0", self._text("placeholder"))
         self.url_text.bind("<FocusIn>", self._clear_placeholder)
 
-        file_row = ttk.Frame(left, style="Panel.TFrame")
+        file_row = ttk.Frame(left, style="Subtle.TFrame", padding=(12, 10))
         file_row.pack(fill=X, pady=(0, 12))
         self.add_images_button = ttk.Button(file_row, command=self._choose_image_files)
         self.add_images_button.pack(side=LEFT)
         self.remove_selected_button = ttk.Button(file_row, command=self._remove_selected_files)
         self.remove_selected_button.pack(side=LEFT, padx=8)
-        self.file_count = ttk.Label(file_row, text="", style="Muted.TLabel")
+        self.file_count = ttk.Label(file_row, text="", style="Subtle.TLabel")
         self.file_count.pack(side=LEFT, padx=8)
 
         path_row = ttk.Frame(left, style="Panel.TFrame")
@@ -220,18 +257,18 @@ class ExtractorApp(tk.Tk):
         self.output_label = ttk.Label(path_row, text="", style="Panel.TLabel")
         self.output_label.pack(side=LEFT)
         ttk.Entry(path_row, textvariable=self.output_dir).pack(side=LEFT, fill=X, expand=True, padx=8)
-        self.browse_button = ttk.Button(path_row, command=self._choose_output_dir)
+        self.browse_button = ttk.Button(path_row, style="Ghost.TButton", command=self._choose_output_dir)
         self.browse_button.pack(side=RIGHT)
 
         actions = ttk.Frame(left, style="Panel.TFrame")
         actions.pack(fill=X, pady=(0, 12))
         self.convert_button = ttk.Button(actions, style="Accent.TButton", command=self._start_extraction)
         self.convert_button.pack(side=LEFT)
-        self.paste_button = ttk.Button(actions, command=self._paste_clipboard)
+        self.paste_button = ttk.Button(actions, style="Ghost.TButton", command=self._paste_clipboard)
         self.paste_button.pack(side=LEFT, padx=8)
-        self.clear_button = ttk.Button(actions, command=self._clear_inputs)
+        self.clear_button = ttk.Button(actions, style="Ghost.TButton", command=self._clear_inputs)
         self.clear_button.pack(side=LEFT)
-        self.open_output_button = ttk.Button(actions, command=self._open_output_dir)
+        self.open_output_button = ttk.Button(actions, style="Ghost.TButton", command=self._open_output_dir)
         self.open_output_button.pack(side=RIGHT)
 
         columns = ("name", "size", "frames", "status")
@@ -247,14 +284,16 @@ class ExtractorApp(tk.Tk):
         self.results.pack(fill=BOTH, expand=True)
         self.results.bind("<<TreeviewSelect>>", self._preview_selected)
 
-        self.preview_title = ttk.Label(right, text="", style="Panel.TLabel", font=("Segoe UI Semibold", 11))
+        self.preview_title = ttk.Label(right, text="", style="Section.TLabel")
         self.preview_title.pack(anchor="w")
+        self.preview_hint_label = ttk.Label(right, text="", style="Muted.TLabel")
+        self.preview_hint_label.pack(anchor="w", pady=(3, 12))
         preview_box = ttk.Frame(right, style="Panel.TFrame")
         preview_box.pack(fill=BOTH, expand=True, pady=(8, 12))
         self.preview_label = ttk.Label(preview_box, text="", style="Muted.TLabel", anchor="center")
         self.preview_label.pack(fill=BOTH, expand=True)
 
-        self.log_title = ttk.Label(right, text="", style="Panel.TLabel", font=("Segoe UI Semibold", 11))
+        self.log_title = ttk.Label(right, text="", style="Section.TLabel")
         self.log_title.pack(anchor="w")
         self.log = ScrolledText(
             right,
@@ -276,7 +315,10 @@ class ExtractorApp(tk.Tk):
     def _apply_language(self) -> None:
         self.lang_button.configure(text=self._text("lang_button"))
         self.title_label.configure(text=self._text("title"))
+        self.tagline_label.configure(text=self._text("tagline"))
+        self.github_button.configure(text=self._text("github"))
         self.source_label.configure(text=self._text("source"))
+        self.source_hint_label.configure(text=self._text("source_hint"))
         self.add_images_button.configure(text=self._text("add_images"))
         self.remove_selected_button.configure(text=self._text("remove_selected"))
         self.output_label.configure(text=self._text("output"))
@@ -290,6 +332,7 @@ class ExtractorApp(tk.Tk):
         self.results.heading("frames", text=self._text("col_frames"))
         self.results.heading("status", text=self._text("col_status"))
         self.preview_title.configure(text=self._text("preview"))
+        self.preview_hint_label.configure(text=self._text("preview_hint"))
         self.log_title.configure(text=self._text("run_log"))
         if self.placeholder_active:
             self.url_text.delete("1.0", END)
@@ -302,6 +345,9 @@ class ExtractorApp(tk.Tk):
     def _toggle_language(self) -> None:
         self.language.set("en" if self.language.get() == "zh" else "zh")
         self._apply_language()
+
+    def _open_github(self) -> None:
+        webbrowser.open(REPO_URL)
 
     def _set_status(self, key: str, **values: object) -> None:
         self.status_key = key
